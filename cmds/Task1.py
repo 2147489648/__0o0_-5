@@ -5,10 +5,8 @@ import discord
 import json
 from discord.ext import commands
 import os
-with open('./cmds/Scheduler_config.json', mode='r', encoding='utf8') as r:
+with open('./cmds/Scheduler_config.json', mode='r+', encoding='utf8') as r:
     rs = json.load(r)
-with open('./cmds/Scheduler_config.json', mode='w', encoding='utf8') as w:
-    ws = json.load(w)
 
 #a library to randomize something
 import random
@@ -27,12 +25,26 @@ class Task1(Cog_Extension):
     #to generate a schedule
     @commands.command()
     async def schedule(self, ctx, com, char):
-        if com == 'create':
-            ws['Schedule'][0] = rs['STime'][0][random.randint(0,6)]
-            json.dump(ws, w)
-            w.close()
-            if char == 'a':
-                await ctx.send(r['Schedule'][0])
+      if com == 'create':
+        if char == 'a':
+          with open('./cmds/Scheduler_config.json', mode='r+', encoding='utf8') as r:
+            rs = json.load(r)
+            u = 0
+            w = rs["STime"][1]
+            while u<len(rs['Config']):
+              v = 0
+              z = [-1,-1,-1]
+              while v<rs['Config'][u]:
+                x = random.randint(0,len(rs['STime'][0])-1)
+                if w[x]>0 and x!=z[0] and x!=z[1] and  x!=z[2]:
+                  rs['Schedule'][u].append(rs["STime"][0][x])
+                  w[x]=w[x]-1
+                  z[v]=x
+                  v=v+1
+                  x = random.randint(0,len(rs['STime'][0])-1)
+              await ctx.send(rs['Schedule'][u])
+              u=u+1
+              
 
   
 
